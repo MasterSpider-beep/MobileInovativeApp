@@ -5,8 +5,7 @@ import { Ionicons } from '@expo/vector-icons';
 export default function HomeScreen({ navigation }) {
     navigation.setOptions({
         headerStyle: {
-            backgroundColor: '#f8f8f8',  // Customize the background color
-            height: 80,  // Adjust header height
+            height: 80,
         },
         headerTitle: () => (
             <Text style={{ fontSize: 20, fontWeight: 'bold' }}>Mental Health Monitoring</Text>
