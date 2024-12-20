@@ -2,6 +2,7 @@
   "name": "proiectmentalhealth",
   "main": "expo-router/entry",
   "version": "1.0.0",
+  "proxy": "http://localhost:5000",
   "scripts": {
     "start": "expo start",
     "reset-project": "node ./scripts/reset-project.js",
@@ -16,10 +17,12 @@
   },
   "dependencies": {
     "@expo/vector-icons": "^14.0.2",
+    "@react-native-async-storage/async-storage": "^2.1.0",
     "@react-navigation/bottom-tabs": "^7.0.0",
     "@react-navigation/native": "^7.0.0",
     "@react-navigation/native-stack": "^7.1.0",
     "@react-navigation/stack": "^7.0.5",
+    "axios": "^0.24.0",
     "expo": "~52.0.9",
     "expo-blur": "~14.0.1",
     "expo-constants": "~17.0.3",

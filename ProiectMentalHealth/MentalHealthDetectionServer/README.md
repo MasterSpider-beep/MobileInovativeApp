@@ -8,6 +8,8 @@ python.exe main.py
 
 ## API Endpoints 🔹🔚
 
+## OUTDATED
+
 ### 1. **`/login/<user_id>`**
 - **Description:** Initiates a session for the specified user.
 - **Functionality:**

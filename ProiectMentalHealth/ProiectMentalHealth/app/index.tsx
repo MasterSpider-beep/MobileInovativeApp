@@ -27,7 +27,7 @@ function MainTabNavigator() {
                     // @ts-ignore
                     return <Ionicons name={iconName} size={size} color={color}/>;
                 },
-                tabBarActiveTintColor: 'tomato',
+                tabBarActiveTintColor: '#3fa4e8',
                 tabBarInactiveTintColor: 'gray',
             })}
         >
