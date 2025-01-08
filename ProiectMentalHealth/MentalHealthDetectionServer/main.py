@@ -1,8 +1,12 @@
+import math
 import pickle
 import threading
 import time
 import os
 from random import random
+import requests
+from deep_translator.constants import OPEN_AI_ENV_VAR
+from exceptiongroup import catch
 
 from flask import Flask, jsonify, request, session, redirect, url_for
 from Dataset import Dataset
@@ -10,7 +14,7 @@ from flask_sqlalchemy import SQLAlchemy
 from flask_cors import CORS
 
 api = Flask(__name__)
-api.secret_key = 'your-secret-key'
+api.secret_key = 'VerySecretKey'
 CORS(api)
 
 base_dir = os.path.abspath(os.path.dirname(__file__))
@@ -77,8 +81,18 @@ def get_measurements():
     except jwt.InvalidTokenError:
         return jsonify({"error": "Invalid token"}), 401
     dataset = user_data.get(user_id, Dataset())
-    last_two_values = {field: values[-2:] for field, values in dataset.to_dict().items()}
-    return jsonify(last_two_values)
+    latest_values = {field: values[-1:] for field, values in dataset.to_dict().items()}
+
+    # Calculate combined acceleration magnitude
+    acc_x = latest_values.get('acc_x')[0]
+    acc_y = latest_values.get('acc_y')[0]
+    acc_z = latest_values.get('acc_z')[0]
+    acc_magnitude = math.sqrt(acc_x**2 + acc_y**2 + acc_z**2)
+
+    # Add the magnitude to the response
+    latest_values['acc_magnitude'] = acc_magnitude
+
+    return jsonify(latest_values)
 
 from flask import request, jsonify
 import jwt
@@ -184,6 +198,32 @@ with open("label_mapping.json", "r") as file:
 
 reverse_mapping = {v: k for k, v in label_mapping.items()}
 
+from openai import OpenAI, APIError, OpenAIError
+
+@api.route('/adviceAPI', methods=['GET'])
+def get_advice_from_wolfram():
+    try:
+
+        client = OpenAI()
+        completion = client.chat.completions.create(
+            model="gpt-4o-mini",
+            messages=[
+                {
+                    "role": "user",
+                    "content": "Advice for reducing stress."
+                }
+            ],
+            max_tokens=100
+        )
+
+        print(completion.choices[0].message)
+        return completion.choices[0].message
+    except OpenAIError as e:
+        print(e)
+    except Exception as e:
+        print(e)
+
+
 @api.route('/predict', methods=['GET'])
 def get_prediction():
     auth_header = request.headers.get('Authorization')
@@ -245,4 +285,4 @@ atexit.register(lambda: [save_measurements(user_id) for user_id in user_data])
 
 # Start the server
 if __name__ == '__main__':
-    api.run(debug=True)
+    api.run(debug=True, host='0.0.0.0', port=5000)

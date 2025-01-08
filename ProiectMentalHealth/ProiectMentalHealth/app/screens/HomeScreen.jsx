@@ -1,21 +1,21 @@
-import React, { useState, useEffect } from 'react';
-import { View, Text, TouchableOpacity, StyleSheet, ScrollView } from 'react-native';
-import { Ionicons } from '@expo/vector-icons';
-import { getMeasurements, getPrediction } from '../api/api_calls';
+import React, {useState, useEffect} from 'react';
+import {View, Text, TouchableOpacity, StyleSheet, ScrollView} from 'react-native';
+import {Ionicons} from '@expo/vector-icons';
+import {getMeasurements, getPrediction} from '../api/api_calls';
 
 // Mock function to simulate fetching other measurements
 const fetchMeasurements = () => {
-    const data = getMeasurements();
-    return Promise.resolve(data);
+  const data = getMeasurements();
+  return Promise.resolve(data);
 };
 
 // Mock function to simulate fetching mood data
 const fetchMood = () => {
-    const mood = getPrediction();
-    return Promise.resolve(mood);
+  const mood = getPrediction();
+  return Promise.resolve(mood);
 };
 
-export default function HomeScreen({ navigation }) {
+export default function HomeScreen({navigation}) {
   const [data, setData] = useState({
     acc_x: [],
     acc_y: [],
@@ -29,93 +29,90 @@ export default function HomeScreen({ navigation }) {
   useEffect(() => {
     // Fetch the data when the component mounts
 
-    const updateMetrics = () =>{
-        fetchMeasurements().then((loadedData) => {
-            setData(loadedData);
-          });
-      
-          
-          fetchMood().then((moodData) => {
-            setMood(moodData);
-          });
+    const updateMetrics = () => {
+      fetchMeasurements().then((loadedData) => {
+        setData(loadedData);
+      });
+
+
+      fetchMood().then((moodData) => {
+        setMood(moodData);
+      });
     }
     updateMetrics();
 
     const intervalId = setInterval(updateMetrics, 10000);
 
     return () => {
-        clearInterval(intervalId);
+      clearInterval(intervalId);
     }
   }, []);
-
-  navigation.setOptions({
-    headerStyle: {
-      height: 80,
-    },
-    headerTitle: () => (
-      <Text style={{ fontSize: 20, fontWeight: 'bold', color: 'white' }}>
-        Mental Health Monitoring
-      </Text>
-    ),
-    headerRight: () => (
-      <View style={{ marginRight: 20 }}>
-        <TouchableOpacity onPress={() => navigation.navigate('Account')} style={{ marginLeft: 15 }}>
-          <Ionicons name="person-circle" size={30} color="white" />
-        </TouchableOpacity>
-      </View>
-    ),
-  });
+  useEffect(() => {
+    navigation.setOptions({
+      headerStyle: {
+        height: 80,
+      },
+      headerTitle: () => (
+          <Text style={{fontSize: 20, fontWeight: 'bold', color: 'white'}}>
+            Mental Health Monitoring
+          </Text>
+      ),
+      headerRight: () => (
+          <View style={{marginRight: 20}}>
+            <TouchableOpacity onPress={() => navigation.navigate('Account')} style={{marginLeft: 15}}>
+              <Ionicons name="person-circle" size={30} color="white"/>
+            </TouchableOpacity>
+          </View>
+      ),
+    });
+  }, []);
 
   return (
-    <View style={styles.container}>
-      <ScrollView contentContainerStyle={styles.scrollContainer}>
-        <View style={styles.card}>
-          <View style={styles.iconContainer}>
-            <Ionicons
-              name="happy"
-              size={40}
-              color="#3fa4e8"
-              style={styles.icon}
-            />
-          </View>
-          <View style={styles.cardContent}>
-            <Text style={styles.cardTitle}>Mood</Text>
-            <Text style={styles.cardValueLarge}>{mood}</Text>
-          </View>
-        </View>
-        {['acc_x', 'acc_y', 'acc_z', 'bvp', 'eda', 'temp'].map((key, index) => (
-          <View key={index} style={styles.card}>
+      <View style={styles.container}>
+        <ScrollView contentContainerStyle={styles.scrollContainer}>
+          <View style={styles.card}>
             <View style={styles.iconContainer}>
               <Ionicons
-                name={getIconName(key)}
-                size={40} // Increase the size of the icon for better visibility
-                color="#3fa4e8"
-                style={styles.icon}
+                  name={getMoodIcon(mood)}
+                  size={40}
+                  color="#3fa4e8"
+                  style={styles.icon}
               />
             </View>
             <View style={styles.cardContent}>
-              <Text style={styles.cardTitle}>{formatLabel(key)}</Text>
-              <Text style={styles.cardValueLarge}>
-                {Array.isArray(data[key]) ? data[key].join(', ') : data[key]}
-              </Text>
+              <Text style={styles.cardTitle}>Mood</Text>
+              <Text style={styles.cardValueLarge}>{getMoodName(mood)}</Text>
             </View>
           </View>
-        ))}
+          {['acc_magnitude', 'bvp', 'eda', 'temp'].map((key, index) => (
+              <View key={index} style={styles.card}>
+                <View style={styles.iconContainer}>
+                  <Ionicons
+                      name={getIconName(key)}
+                      size={40}
+                      color="#3fa4e8"
+                      style={styles.icon}
+                  />
+                </View>
+                <View style={styles.cardContent}>
+                  <Text style={styles.cardTitle}>{formatLabel(key)}</Text>
+                  <Text style={styles.cardValueLarge}>
+                    {Array.isArray(data[key]) ? data[key].join(', ') : data[key]}
+                  </Text>
+                </View>
+              </View>
+          ))}
 
-      </ScrollView>
-    </View>
+        </ScrollView>
+      </View>
   );
 }
 
 // Helper function to get the icon name based on the type of data
 const getIconName = (key) => {
   switch (key) {
-    case 'acc_x':
-        return 'md-git-branch';
-    case 'acc_y':
-        return 'md-git-branch';
-    case 'acc_z':
-      return 'md-git-branch'; // Icon for accelerometer data
+    case 'acc_magnitude':
+      return 'walk';
     case 'bvp':
       return 'heart'; // Icon for BVP (heart rate)
     case 'eda':
@@ -127,15 +124,31 @@ const getIconName = (key) => {
   }
 };
 
+const getMoodName = (key) => {
+  switch (key) {
+    case 'stress':
+      return 'Stressed';
+    case 'baseline':
+      return 'Normal'
+    case 'amusement':
+      return 'Happy';
+    case 'meditation':
+      return 'Calm'
+  }
+}
+
+const getMoodIcon = (key) => {
+  if(key === 'stress'){
+    return 'sad';
+  }
+  return 'happy';
+}
+
 // Helper function to format the label
 const formatLabel = (key) => {
   switch (key) {
-    case 'acc_x':
-      return 'Accelerometer X';
-    case 'acc_y':
-      return 'Accelerometer Y';
-    case 'acc_z':
-      return 'Accelerometer Z';
+    case 'acc_magnitude':
+      return 'Acceleration Magnitude';
     case 'bvp':
       return 'BVP (Heart Rate)';
     case 'eda':

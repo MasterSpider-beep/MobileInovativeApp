@@ -16,6 +16,7 @@
         "foregroundImage": "./assets/images/adaptive-icon.png",
         "backgroundColor": "#ffffff"
       },
+      "permissions": ["INTERNET","ACCESS_NETWORK_STATE"],
       "package": "com.anonymous.ProiectMentalHealth"
     },
     "web": {
@@ -37,6 +38,14 @@
     ],
     "experiments": {
       "typedRoutes": true
+    },
+    "extra": {
+      "router": {
+        "origin": false
+      },
+      "eas": {
+        "projectId": "195722a7-5032-400d-b309-3eed52f4b54d"
+      }
     }
   }
 }
